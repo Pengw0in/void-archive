@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.5in, landscape]{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{multirow}
+
+% Define a clean color palette
+\definecolor{headercolor}{RGB}{52, 73, 94}
+\definecolor{theorycolor}{RGB}{236, 240, 241}
+\definecolor{labcolor}{RGB}{254, 249, 231}
+\definecolor{electivecolor}{RGB}{232, 245, 233}
+\definecolor{breakcolor}{RGB}{255, 235, 238}
+
+\begin{document}
+
+\begin{center}
+{\huge\textbf{Class Timetable}}\\[0.5cm]
+{\large Computer Science Engineering}
+\end{center}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{2cm}|>{\centering\arraybackslash}p{2.5cm}|>{\centering\arraybackslash}p{2.8cm}|p{5cm}|>{\centering\arraybackslash}p{2cm}|p{4.2cm}|}
+
+\hline
+\rowcolor{headercolor}
+\textcolor{white}{\textbf{Day}} & \textcolor{white}{\textbf{Time}} & \textcolor{white}{\textbf{Course Code}} & \textcolor{white}{\textbf{Course Title}} & \textcolor{white}{\textbf{Room}} & \textcolor{white}{\textbf{Instructor}} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{headercolor}
+\textcolor{white}{\textbf{Day}} & \textcolor{white}{\textbf{Time}} & \textcolor{white}{\textbf{Course Code}} & \textcolor{white}{\textbf{Course Title}} & \textcolor{white}{\textbf{Room}} & \textcolor{white}{\textbf{Instructor}} \\
+\hline
+\endhead
+
+% MONDAY
+\textbf{MON} & 08:00-08:50 & \cellcolor{theorycolor}24CSEN2001 & \cellcolor{theorycolor}Data Structures & ICT-119 & Dasari Siva Krishna \\
+\cline{2-6}
+& 09:00-09:50 & \cellcolor{theorycolor}24CSEN1011 & \cellcolor{theorycolor}Object Oriented Programming & ICT-118 & Sekharamahanti S Nandini \\
+\cline{2-6}
+& 10:00-10:50 & \cellcolor{theorycolor}24CSEN2021 & \cellcolor{theorycolor}Computer Organization \& Architecture & ICT-118 & Chinnarao Kurangi \\
+\cline{2-6}
+& 11:00-11:50 & \cellcolor{theorycolor}MATH2561 & \cellcolor{theorycolor}Probability \& Statistics for Engineering & ICT-118 & New Faculty Statistics-3 \\
+\cline{2-6}
+& 12:00-13:00 & \multicolumn{4}{c|}{\cellcolor{breakcolor}\textbf{LUNCH BREAK}} \\
+\cline{2-6}
+& 13:00-13:50 & \cellcolor{electivecolor}PSYC1002 & \cellcolor{electivecolor}Introduction to Psychology & GIFT-202 & Valiyamattam Georgitta Joseph \\
+\hline
+
+% TUESDAY
+\textbf{TUE} & 08:00-08:50 & \cellcolor{theorycolor}24CSEN2021 & \cellcolor{theorycolor}Computer Organization \& Architecture & ICT-118 & Chinnarao Kurangi \\
+\cline{2-6}
+& 09:00-09:50 & \cellcolor{electivecolor}ENVS1003 & \cellcolor{electivecolor}Environmental Studies & ICT-119 & Manoj P R \\
+\cline{2-6}
+& 10:00-10:50 & \cellcolor{theorycolor}MATH2561 & \cellcolor{theorycolor}Probability \& Statistics for Engineering & ICT-118 & New Faculty Statistics-3 \\
+\cline{2-6}
+& 11:00-11:50 & \cellcolor{theorycolor}24CSEN1011 & \cellcolor{theorycolor}Object Oriented Programming & ICT-118 & Sekharamahanti S Nandini \\
+\cline{2-6}
+& 12:00-13:00 & \multicolumn{4}{c|}{\cellcolor{breakcolor}\textbf{LUNCH BREAK}} \\
+\cline{2-6}
+& 13:00-13:50 & \cellcolor{electivecolor}PSYC1002 & \cellcolor{electivecolor}Introduction to Psychology & GIFT-202 & Valiyamattam Georgitta Joseph \\
+\cline{2-6}
+& 14:00-15:50 & \cellcolor{labcolor}24CSEN2001P & \cellcolor{labcolor}Data Structures Lab (2 hours) & ICT-320 & Dasari Siva Krishna \\
+\hline
+
+% WEDNESDAY
+\textbf{WED} & 08:00-09:50 & \cellcolor{electivecolor}CLAD1041 & \cellcolor{electivecolor}Art of Persuasive Communication (2 hours) & ICT-118 & Faculty 3 \\
+\cline{2-6}
+& 10:00-10:50 & \cellcolor{theorycolor}24CSEN2021 & \cellcolor{theorycolor}Computer Organization \& Architecture & ICT-118 & Chinnarao Kurangi \\
+\cline{2-6}
+& 11:00-11:50 & \cellcolor{theorycolor}MATH2561 & \cellcolor{theorycolor}Probability \& Statistics for Engineering & ICT-118 & New Faculty Statistics-3 \\
+\cline{2-6}
+& 12:00-13:00 & \multicolumn{4}{c|}{\cellcolor{breakcolor}\textbf{LUNCH BREAK}} \\
+\cline{2-6}
+& 13:00-13:50 & \cellcolor{electivecolor}PSYC1002 & \cellcolor{electivecolor}Introduction to Psychology & GIFT-202 & Valiyamattam Georgitta Joseph \\
+\hline
+
+% THURSDAY
+\textbf{THU} & 08:00-09:50 & \cellcolor{labcolor}24CSEN1011P & \cellcolor{labcolor}Object Oriented Programming Lab (2 hours) & ICT-220 & Sekharamahanti S Nandini \\
+\cline{2-6}
+& 10:00-10:50 & \cellcolor{theorycolor}24CSEN2001 & \cellcolor{theorycolor}Data Structures & ICT-119 & Dasari Siva Krishna \\
+\cline{2-6}
+& 11:00-11:50 & \cellcolor{theorycolor}MATH2561 & \cellcolor{theorycolor}Probability \& Statistics for Engineering & ICT-118 & New Faculty Statistics-3 \\
+\cline{2-6}
+& 12:00-13:00 & \multicolumn{4}{c|}{\cellcolor{breakcolor}\textbf{LUNCH BREAK}} \\
+\hline
+
+% FRIDAY
+\textbf{FRI} & 09:00-09:50 & \cellcolor{theorycolor}24CSEN1011 & \cellcolor{theorycolor}Object Oriented Programming & ICT-118 & Sekharamahanti S Nandini \\
+\cline{2-6}
+& 10:00-10:50 & \cellcolor{theorycolor}24CSEN2001 & \cellcolor{theorycolor}Data Structures & ICT-119 & Dasari Siva Krishna \\
+\cline{2-6}
+& 11:00-11:50 & \cellcolor{theorycolor}24CSEN2021 & \cellcolor{theorycolor}Computer Organization \& Architecture & ICT-118 & Chinnarao Kurangi \\
+\cline{2-6}
+& 12:00-13:00 & \multicolumn{4}{c|}{\cellcolor{breakcolor}\textbf{LUNCH BREAK}} \\
+\hline
+
+\end{longtable}
+
+\vspace{0.3cm}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\cellcolor{theorycolor}\textbf{Theory} & Core CS \& Math courses \\
+\hline
+\cellcolor{labcolor}\textbf{Lab} & Practical sessions (2 hours) \\
+\hline
+\cellcolor{electivecolor}\textbf{Elective} & Psychology, Communication, Environment \\
+\hline
+\cellcolor{breakcolor}\textbf{Break} & Lunch time \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

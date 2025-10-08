@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Balanced Triangle Mesh</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // --- Quadtree Implementation ---
+    class Rectangle {
+      constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+      }
+      contains(point) {
+        return (
+          point.x >= this.x - this.w &&
+          point.x < this.x + this.w &&
+          point.y >= this.y - this.h &&
+          point.y < this.y + this.h
+        );
+      }
+      intersects(range) {
+        return !(
+          range.x - range.w > this.x + this.w ||
+          range.x + range.w < this.x - this.w ||
+          range.y - range.h > this.y + this.h ||
+          range.y + range.h < this.y - this.h
+        );
+      }
+    }
+    
+    class Circle {
+      constructor(x, y, r) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.w = r;
+        this.h = r;
+      }
+      contains(point) {
+        let d = dist(point.x, point.y, this.x, this.y);
+        return d <= this.r;
+      }
+      intersects(range) {
+        // Check circle-rectangle intersection
+        let xDist = abs(this.x - range.x);
+        let yDist = abs(this.y - range.y);
+        let r = this.r;
+        let w = range.w;
+        let h = range.h;
+        let edges = pow(xDist - w, 2) + pow(yDist - h, 2);
+        if (xDist > r + w || yDist > r + h) return false;
+        if (xDist <= w || yDist <= h) return true;
+        return edges <= r * r;
+      }
+    }
+    
+    class QuadTree {
+      constructor(boundary, capacity) {
+        this.boundary = boundary;
+        this.capacity = capacity;
+        this.points = [];
+        this.divided = false;
+      }
+    
+      subdivide() {
+        let x = this.boundary.x;
+        let y = this.boundary.y;
+        let w = this.boundary.w / 2;
+        let h = this.boundary.h / 2;
+    
+        let ne = new Rectangle(x + w, y - h, w, h);
+        this.northeast = new QuadTree(ne, this.capacity);
+        let nw = new Rectangle(x - w, y - h, w, h);
+        this.northwest = new QuadTree(nw, this.capacity);
+        let se = new Rectangle(x + w, y + h, w, h);
+        this.southeast = new QuadTree(se, this.capacity);
+        let sw = new Rectangle(x - w, y + h, w, h);
+        this.southwest = new QuadTree(sw, this.capacity);
+    
+        this.divided = true;
+      }
+    
+      insert(point) {
+        if (!this.boundary.contains(point)) return false;
+    
+        if (this.points.length < this.capacity) {
+          this.points.push(point);
+          return true;
+        } else {
+          if (!this.divided) this.subdivide();
+          if (this.northeast.insert(point)) return true;
+          if (this.northwest.insert(point)) return true;
+          if (this.southeast.insert(point)) return true;
+          if (this.southwest.insert(point)) return true;
+        }
+      }
+    
+      query(range, found) {
+        if (!found) found = [];
+        if (!this.boundary.intersects(range)) return found;
+        else {
+          for (let p of this.points) {
+            if (range.contains(p)) found.push(p);
+          }
+          if (this.divided) {
+            this.northwest.query(range, found);
+            this.northeast.query(range, found);
+            this.southwest.query(range, found);
+            this.southeast.query(range, found);
+          }
+          return found;
+        }
+      }
+    }
+    
+    // A wrapper for points used in the quadtree.
+    class QTPoint {
+      constructor(x, y, data) {
+        this.x = x;
+        this.y = y;
+        this.data = data; // reference to our point object
+      }
+    }
+    
+    // --- Main Code ---
+    let points = [];
+    const numPoints = 70;
+    let maxDistance;
+    const greenColor = [255, 255, 255];
+    let gradientBackground;
+    let trianglesPerPoint = [];
+    
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      maxDistance = width / 4;
+      createPoints();
+      createGradientBackground();
+    }
+    
+    function createPoints() {
+      points = [];
+      trianglesPerPoint = [];
+      let gridSize = sqrt(numPoints);
+      let cellWidth = width / gridSize;
+      let cellHeight = height / gridSize;
+    
+      let idx = 0;
+      // Evenly distributed points
+      for (let i = 0; i < numPoints; i++) {
+        let gridX = i % gridSize;
+        let gridY = floor(i / gridSize);
+        let x = gridX * cellWidth + random(cellWidth * 0.2, cellWidth * 0.8);
+        let y = gridY * cellHeight + random(cellHeight * 0.2, cellHeight * 0.8);
+        let pt = {
+          x: x,
+          y: y,
+          z: random(0.5, 1.5),
+          vx: random(-0.3, 0.3),
+          vy: random(-0.3, 0.3),
+          size: random(1, 2.5),
+          index: idx
+        };
+        points.push(pt);
+        trianglesPerPoint.push(0);
+        idx++;
+      }
+      // Some completely random points for variation
+      for (let i = 0; i < numPoints / 5; i++) {
+        let pt = {
+          x: random(width),
+          y: random(height),
+          z: random(0.5, 1.5),
+          vx: random(-0.3, 0.3),
+          vy: random(-0.3, 0.3),
+          size: random(1, 2.5),
+          index: idx
+        };
+        points.push(pt);
+        trianglesPerPoint.push(0);
+        idx++;
+      }
+    }
+    
+    function createGradientBackground() {
+      gradientBackground = createGraphics(width, height);
+      gradientBackground.background(0);
+      for (let x = 0; x < width; x += 2) {
+        for (let y = 0; y < height; y += 2) {
+          let distance = dist(x, y, width * 0.7, height * 0.5);
+          let maxDist = sqrt(width * width + height * height) * 0.5;
+          let brightness = map(distance, 0, maxDist, 0, 20);
+          let g = map(distance, 0, maxDist, 0, 50);
+          gradientBackground.stroke(0, g, 0, brightness);
+          gradientBackground.point(x, y);
+        }
+      }
+    }
+    
+    function draw() {
+      // Draw the precomputed gradient background.
+      image(gradientBackground, 0, 0);
+      // Add a slight blur effect.
+      fill(0, 12);
+      rect(0, 0, width, height);
+    
+      updatePoints();
+    
+      // Build a new quadtree for the current frame.
+      let boundary = new Rectangle(width / 2, height / 2, width / 2, height / 2);
+      let qt = new QuadTree(boundary, 4);
+      for (let pt of points) {
+        qt.insert(new QTPoint(pt.x, pt.y, pt));
+      }
+    
+      // Reset triangle counters.
+      trianglesPerPoint.fill(0);
+    
+      drawTriangles(qt);
+      drawPoints();
+    
+      // Mouse interactive connections.
+      if (mouseX > 0 && mouseY > 0) {
+        let mousePoint = { x: mouseX, y: mouseY };
+        drawConnectionsToMouse(qt, mousePoint);
+      }
+    }
+    
+    function updatePoints() {
+      for (let pt of points) {
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+    
+        if (pt.x < 0 || pt.x > width) {
+          pt.vx *= -1;
+          pt.vx += random(-0.05, 0.05);
+        }
+        if (pt.y < 0 || pt.y > height) {
+          pt.vy *= -1;
+          pt.vy += random(-0.05, 0.05);
+        }
+    
+        pt.vx = constrain(pt.vx, -0.6, 0.6);
+        pt.vy = constrain(pt.vy, -0.6, 0.6);
+      }
+    }
+    
+    function drawPoints() {
+      for (let pt of points) {
+        // Outer glow.
+        noStroke();
+        fill(greenColor[0], greenColor[1], greenColor[2], 15 * pt.z);
+        circle(pt.x, pt.y, pt.size * 3);
+        // Inner point.
+        fill(greenColor[0], greenColor[1], greenColor[2], 100 * pt.z);
+        circle(pt.x, pt.y, pt.size * pt.z);
+      }
+    }
+    
+    function drawTriangles(qt) {
+      // Sort points by their z value to create a depth effect.
+      let sortedPoints = [...points].sort((a, b) => a.z - b.z);
+      const maxTrianglesPerPoint = 3;
+    
+      for (let pt of sortedPoints) {
+        if (trianglesPerPoint[pt.index] >= maxTrianglesPerPoint) continue;
+    
+        // Query the quadtree for neighbors within the maximum possible radius.
+        let queryCircle = new Circle(pt.x, pt.y, maxDistance * 1.5);
+        let neighborsQT = qt.query(queryCircle);
+    
+        let neighbors = [];
+        for (let item of neighborsQT) {
+          let neighbor = item.data;
+          if (neighbor.index === pt.index) continue;
+          if (trianglesPerPoint[neighbor.index] >= maxTrianglesPerPoint) continue;
+          let d = dist(pt.x, pt.y, neighbor.x, neighbor.y);
+          // Use an adjusted maximum distance based on both points' z values.
+          let adjustedMaxDist = maxDistance * ((pt.z + neighbor.z) / 2);
+          if (d < adjustedMaxDist) {
+            neighbors.push({ point: neighbor, distance: d });
+          }
+        }
+    
+        // Sort neighbors by distance and take only the closest five.
+        neighbors.sort((a, b) => a.distance - b.distance);
+        neighbors = neighbors.slice(0, 5);
+    
+        // Form triangles between this point and pairs of its neighbors.
+        for (let j = 0; j < neighbors.length - 1; j++) {
+          if (trianglesPerPoint[pt.index] >= maxTrianglesPerPoint) break;
+          let neighborJ = neighbors[j].point;
+          for (let k = j + 1; k < neighbors.length; k++) {
+            let neighborK = neighbors[k].point;
+            if (
+              trianglesPerPoint[neighborJ.index] >= maxTrianglesPerPoint ||
+              trianglesPerPoint[neighborK.index] >= maxTrianglesPerPoint
+            )
+              continue;
+    
+            let dJK = dist(neighborJ.x, neighborJ.y, neighborK.x, neighborK.y);
+            let adjustedMaxDistJK = maxDistance * ((neighborJ.z + neighborK.z) / 2);
+            if (dJK < adjustedMaxDistJK) {
+              let avgZ = (pt.z + neighborJ.z + neighborK.z) / 3;
+              let avgDist = (neighbors[j].distance + neighbors[k].distance + dJK) / 3;
+              let alpha = map(avgDist, 0, adjustedMaxDistJK, 50, 17) * avgZ;
+    
+              noFill();
+              strokeWeight(0.8 * avgZ);
+              stroke(greenColor[0], greenColor[1], greenColor[2], alpha);
+              beginShape();
+              vertex(pt.x, pt.y);
+              vertex(neighborJ.x, neighborJ.y);
+              vertex(neighborK.x, neighborK.y);
+              endShape(CLOSE);
+    
+              trianglesPerPoint[pt.index]++;
+              trianglesPerPoint[neighborJ.index]++;
+              trianglesPerPoint[neighborK.index]++;
+            }
+          }
+        }
+      }
+    }
+    
+    function drawConnectionsToMouse(qt, mousePoint) {
+      let pulseFactor = (sin(frameCount * 0.05) + 1) * 0.5;
+      let pulseDistance = maxDistance * (0.8 + pulseFactor * 0.3);
+    
+      let queryCircle = new Circle(mousePoint.x, mousePoint.y, pulseDistance);
+      let closestQT = qt.query(queryCircle);
+    
+      let closestPoints = [];
+      for (let item of closestQT) {
+        let pt = item.data;
+        let d = dist(mousePoint.x, mousePoint.y, pt.x, pt.y);
+        closestPoints.push({ point: pt, distance: d });
+      }
+      closestPoints.sort((a, b) => a.distance - b.distance);
+    
+      let numConnections = min(6, closestPoints.length);
+      for (let i = 0; i < numConnections; i++) {
+        let pt = closestPoints[i].point;
+        let alpha = map(closestPoints[i].distance, 0, pulseDistance, 120, 30) * pt.z;
+        for (let w = 2; w > 0; w--) {
+          stroke(greenColor[0], greenColor[1], greenColor[2], alpha / (w * 2));
+          strokeWeight(w * pt.z * 0.8);
+          line(mousePoint.x, mousePoint.y, pt.x, pt.y);
+        }
+      }
+    }
+    
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      maxDistance = width / 4;
+      createPoints();
+      createGradientBackground();
+    }
+  </script>
+</body>
+</html>

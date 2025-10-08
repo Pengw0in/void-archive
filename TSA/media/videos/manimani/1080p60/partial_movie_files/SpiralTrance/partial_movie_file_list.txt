@@ -1,0 +1,8 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3529212410_3210353636_223132457.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_3201849554_260045833.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_3413688_2375220172.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_916683540_2375220172.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_1839128356_759725671.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_2837467564_1688392557.mp4'
+file 'file:/Users/lohithsrikar/Desktop/everything/TSA/media/videos/manimani/1080p60/partial_movie_files/SpiralTrance/3040924799_1754310298_3025499453.mp4'

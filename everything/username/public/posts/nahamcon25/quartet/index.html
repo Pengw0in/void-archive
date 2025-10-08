@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/lohithsrikar/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=lohithsrikar/livereload" data-no-instant defer></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>[Nahamcon25] Quartet | lohithsrikar</title>
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/lohithsrikar/images/favicon.ico">
+
+    <link rel="stylesheet" href="http://localhost:1313/lohithsrikar/css/main.css">
+    <link rel="stylesheet" href="http://localhost:1313/lohithsrikar/css/min600.css">
+
+
+      <script src="http://localhost:1313/lohithsrikar/js/main.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4QR5T88G3K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('hugo', 'G-4QR5T88G3K');
+</script>
+
+
+</head>
+<body>
+    <header class="main-header">
+	<nav>
+	  <li><a href="http://localhost:1313/lohithsrikar/">/home</a></li>
+	  <li><a href="http://localhost:1313/lohithsrikar/about/">/about</a></li>
+	  <li><a href="http://localhost:1313/lohithsrikar/posts/">/posts</a></li>
+	  <li><a href="http://localhost:1313/lohithsrikar/tags/">/tags</a></li>
+	  <li id="theme-toggle" style="cursor: pointer;">/todark</li>
+	</nav>
+  </header>
+
+  <script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  const themeToggle = document.getElementById('theme-toggle');
+	  
+	  
+	  let currentTheme = localStorage.getItem('theme') || 'light';
+  
+	  
+	  document.body.setAttribute('data-theme', currentTheme);
+	  themeToggle.textContent = currentTheme === 'dark' ? '/tolight' : '/todark';
+  
+	  
+	  function toggleTheme() {
+		
+		const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  
+		
+		document.body.setAttribute('data-theme', newTheme);
+  
+		
+		localStorage.setItem('theme', newTheme);
+  
+		
+		themeToggle.textContent = newTheme === 'dark' ? '/tolight' : '/todark';
+	  }
+  
+	  
+	  themeToggle.addEventListener('click', toggleTheme);
+	});
+  </script>
+
+    
+  <aside class="toc">
+    <nav id="TableOfContents"></nav>
+  </aside>
+  <div class="featured-container">
+    
+      <div class="featured-image">
+        <img src="http://localhost:1313/lohithsrikar/images/nahamcon/freeflags/featured.png" alt="Featured Image for [Nahamcon25] Quartet">
+      </div>
+    
+    <div class="overlay-text">
+      <small>2025.05.23</small>
+      <div class="singleTitle">[Nahamcon25] Quartet</div>
+    </div>
+  </div>
+  <div class="series">
+  <details>
+    <summary>NahamCon 2025 CTF Series</summary>
+    <ul>
+      
+      
+      
+    </ul>
+  </details>
+</div>
+
+<h1 id="quartet">Quartet</h1>
+<p>Hello everyone!</p>
+<p>In this writeup, let&rsquo;s see how we can solve the Quartet CTF challenge from NahamCon 2025.</p>
+<img src="http://localhost:1313/lohithsrikar/images/nahamcon/quartet/1.png" alt="Challenge Screenshot" width="600">
+<p>We are given four files with strange extensions. Well, they may seem strange for someone who&rsquo;s seeing them for the first time, but they&rsquo;re not!</p>
+<p>These files with &ldquo;zX&rdquo; (where X is a number) extensions are parts of a single zip file (.zip). Basically, combining these zip files will give us one single complete zip file in theory.</p>
+<p>Let&rsquo;s try to combine them with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat * &gt; main.zip <span style="color:#75715e"># Make sure all these files are in an isolated folder!</span>
+</span></span></code></pre></div><p>Now let&rsquo;s unzip this main.zip file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>unzip main.zip
+</span></span></code></pre></div><p>And alas! We are greeted with an error, which is just a warning 🤷‍♂️</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Archive:  main.zip
+</span></span><span style="display:flex;"><span>warning <span style="color:#f92672">[</span>main.zip<span style="color:#f92672">]</span>:  zipfile claims to be last disk of a multi-part archive;
+</span></span><span style="display:flex;"><span>  attempting to process anyway, assuming all parts have been concatenated
+</span></span><span style="display:flex;"><span>  together in order.  Expect <span style="color:#e6db74">&#34;errors&#34;</span> and warnings...true multi-part support
+</span></span><span style="display:flex;"><span>  doesn<span style="color:#960050;background-color:#1e0010">&#39;</span>t exist yet <span style="color:#f92672">(</span>coming soon<span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>warning <span style="color:#f92672">[</span>main.zip<span style="color:#f92672">]</span>:  <span style="color:#ae81ff">1526784</span> extra bytes at beginning or within zipfile
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>attempting to process anyway<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>file <span style="color:#75715e">#1:  bad zipfile offset (local header sig):  1526788</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">(</span>attempting to re-compensate<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  inflating: quartet.jpeg
+</span></span></code></pre></div><p>Meh, just ignore them. We can see <code>inflating: quartet.jpeg</code> at the end, which means a JPEG file is extracted from main.zip. Let&rsquo;s look at it.</p>
+<img src="http://localhost:1313/lohithsrikar/images/nahamcon/quartet/quartet.jpeg" alt="Quartet Image" width="600">
+<p>Woah, a quartet! No wonder the CTF name is the same. Well, it&rsquo;s an image. Let&rsquo;s search for strings and filter them out with the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>strings quartet.jpeg | grep <span style="color:#e6db74">&#34;flag&#34;</span>
+</span></span></code></pre></div><p>And there you go—the flag will appear!</p>
+<hr>
+<p><em>Last edit: 24-05-2025</em></p>
+
+
+    
+
+<script src="https://unpkg.com/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js"></script>
+<script>addBackToTop({
+  diameter: 40,
+  backgroundColor: '#49344b',
+  textColor: '#fff'
+})</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanced Triangle Mesh</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000; /* Changed background color to black */
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let points = [];
+        const numPoints = 70;
+        let maxDistance;
+        const greenColor = [128, 128, 255];
+        let gradientBackground;
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            maxDistance = width / 4;
+            
+            // Create points with better distribution
+            createPoints();
+            
+            // Create gradient background
+            createGradientBackground();
+        }
+        
+        function createPoints() {
+            points = [];
+            
+            // Create initial set of evenly distributed points
+            let gridSize = sqrt(numPoints);
+            let cellWidth = width / gridSize;
+            let cellHeight = height / gridSize;
+            
+            for (let i = 0; i < numPoints; i++) {
+                // Calculate grid position
+                let gridX = i % gridSize;
+                let gridY = floor(i / gridSize);
+                
+                // Add randomness within cell
+                let x = gridX * cellWidth + random(cellWidth * 0.2, cellWidth * 0.8);
+                let y = gridY * cellHeight + random(cellHeight * 0.2, cellHeight * 0.8);
+                
+                points.push({
+                    x: x,
+                    y: y,
+                    z: random(0.5, 1.5),
+                    vx: random(-0.3, 0.3),
+                    vy: random(-0.3, 0.3),
+                    size: random(1, 2.5)
+                });
+            }
+            
+            // Add some completely random points for variation
+            for (let i = 0; i < numPoints / 5; i++) {
+                points.push({
+                    x: random(width),
+                    y: random(height),
+                    z: random(0.5, 1.5),
+                    vx: random(-0.3, 0.3),
+                    vy: random(-0.3, 0.3),
+                    size: random(1, 2.5)
+                });
+            }
+        }
+        
+        function createGradientBackground() {
+            gradientBackground = createGraphics(width, height);
+            gradientBackground.background(0); // Changed background to black
+            
+            // Create more subtle gradient
+            for (let x = 0; x < width; x += 2) {
+                for (let y = 0; y < height; y += 2) {
+                    let distance = dist(x, y, width * 0.7, height * 0.5);
+                    let maxDist = sqrt(width * width + height * height) * 0.5;
+                    let brightness = map(distance, 0, maxDist, 0, 20); // Adjusted brightness for black background
+                    let g = map(distance, 0, maxDist, 0, 50);
+                    gradientBackground.stroke(0, g, 0, brightness); // Adjusted stroke color for black background
+                    gradientBackground.point(x, y);
+                }
+            }
+        }
+
+        function draw() {
+            // Draw gradient background
+            image(gradientBackground, 0, 0);
+            
+            // Add slight blur effect with semi-transparent overlay
+            fill(0, 12); // Adjusted fill color for black background
+            rect(0, 0, width, height);
+            
+            // Move points
+            updatePoints();
+            
+            // Draw triangles with density control
+            drawTriangles();
+            
+            // Draw points
+            drawPoints();
+            
+            // Interactive highlight
+            if (mouseX > 0 && mouseY > 0) {
+                let mousePoint = { x: mouseX, y: mouseY };
+                drawConnectionsToMouse(mousePoint);
+            }
+        }
+        
+        function updatePoints() {
+            for (let i = 0; i < points.length; i++) {
+                points[i].x += points[i].vx;
+                points[i].y += points[i].vy;
+                
+                // Bounce off edges with slight randomization
+                if (points[i].x < 0 || points[i].x > width) {
+                    points[i].vx *= -1;
+                    points[i].vx += random(-0.05, 0.05);
+                }
+                if (points[i].y < 0 || points[i].y > height) {
+                    points[i].vy *= -1;
+                    points[i].vy += random(-0.05, 0.05);
+                }
+                
+                // Keep velocities in check
+                points[i].vx = constrain(points[i].vx, -0.6, 0.6);
+                points[i].vy = constrain(points[i].vy, -0.6, 0.6);
+            }
+        }
+
+        function drawPoints() {
+            for (let i = 0; i < points.length; i++) {
+                // Create glowing effect for points
+                let pt = points[i];
+                
+                // Outer glow
+                noStroke();
+                fill(greenColor[0], greenColor[1], greenColor[2], 15 * pt.z);
+                circle(pt.x, pt.y, pt.size * 3);
+                
+                // Inner point
+                fill(greenColor[0], greenColor[1], greenColor[2], 100 * pt.z);
+                circle(pt.x, pt.y, pt.size * pt.z);
+            }
+        }
+
+        function drawTriangles() {
+            // Sort points by z value to create depth
+            let sortedPoints = [...points].sort((a, b) => a.z - b.z);
+            
+            // Limited number of triangles per point to reduce clustering
+            const maxTrianglesPerPoint = 3;
+            let trianglesPerPoint = new Array(sortedPoints.length).fill(0);
+            
+            // Draw triangles with density control
+            for (let i = 0; i < sortedPoints.length; i++) {
+                if (trianglesPerPoint[i] >= maxTrianglesPerPoint) continue;
+                
+                // Find nearby points
+                let neighbors = [];
+                for (let j = 0; j < sortedPoints.length; j++) {
+                    if (i === j) continue;
+                    if (trianglesPerPoint[j] >= maxTrianglesPerPoint) continue;
+                    
+                    let d = dist(sortedPoints[i].x, sortedPoints[i].y, sortedPoints[j].x, sortedPoints[j].y);
+                    let adjustedMaxDist = maxDistance * ((sortedPoints[i].z + sortedPoints[j].z) / 2);
+                    
+                    if (d < adjustedMaxDist) {
+                        neighbors.push({
+                            index: j,
+                            distance: d
+                        });
+                    }
+                }
+                
+                // Sort neighbors by distance
+                neighbors.sort((a, b) => a.distance - b.distance);
+                
+                // Limit number of connections to consider
+                neighbors = neighbors.slice(0, 5);
+                
+                // Create triangles with pairs of neighbors
+                for (let j = 0; j < neighbors.length - 1; j++) {
+                    if (trianglesPerPoint[i] >= maxTrianglesPerPoint) break;
+                    
+                    let j_idx = neighbors[j].index;
+                    
+                    for (let k = j + 1; k < neighbors.length; k++) {
+                        let k_idx = neighbors[k].index;
+                        
+                        if (trianglesPerPoint[j_idx] >= maxTrianglesPerPoint || 
+                            trianglesPerPoint[k_idx] >= maxTrianglesPerPoint) continue;
+                        
+                        // Check if these two neighbors are also close to each other
+                        let d = dist(sortedPoints[j_idx].x, sortedPoints[j_idx].y, 
+                                   sortedPoints[k_idx].x, sortedPoints[k_idx].y);
+                        
+                        let adjustedMaxDist = maxDistance * ((sortedPoints[j_idx].z + sortedPoints[k_idx].z) / 2);
+                        
+                        if (d < adjustedMaxDist) {
+                            // Average z for depth effect
+                            let avgZ = (sortedPoints[i].z + sortedPoints[j_idx].z + sortedPoints[k_idx].z) / 3;
+                            
+                            // Calculate average distance for opacity
+                            let avgDist = (neighbors[j].distance + neighbors[k].distance + d) / 3;
+                            let alpha = map(avgDist, 0, adjustedMaxDist, 50, 17) * avgZ;
+                            
+                            // Draw triangle
+                            noFill();
+                            strokeWeight(0.8 * avgZ);
+                            stroke(greenColor[0], greenColor[1], greenColor[2], alpha);
+                            
+                            beginShape();
+                            vertex(sortedPoints[i].x, sortedPoints[i].y);
+                            vertex(sortedPoints[j_idx].x, sortedPoints[j_idx].y);
+                            vertex(sortedPoints[k_idx].x, sortedPoints[k_idx].y);
+                            endShape(CLOSE);
+                            
+                            // Increment counters
+                            trianglesPerPoint[i]++;
+                            trianglesPerPoint[j_idx]++;
+                            trianglesPerPoint[k_idx]++;
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawConnectionsToMouse(mousePoint) {
+            // Create ripple effect from mouse
+            let pulseFactor = (sin(frameCount * 0.05) + 1) * 0.5;
+            let pulseDistance = maxDistance * (0.8 + pulseFactor * 0.3);
+            
+            // Find closest points to mouse
+            let closestPoints = [];
+            for (let i = 0; i < points.length; i++) {
+                let d = dist(mousePoint.x, mousePoint.y, points[i].x, points[i].y);
+                if (d < pulseDistance) {
+                    closestPoints.push({
+                        index: i,
+                        distance: d
+                    });
+                }
+            }
+            
+            // Sort by distance
+            closestPoints.sort((a, b) => a.distance - b.distance);
+            
+            // Take closest points
+            let numConnections = min(6, closestPoints.length);
+            for (let i = 0; i < numConnections; i++) {
+                let pt = points[closestPoints[i].index];
+                let alpha = map(closestPoints[i].distance, 0, pulseDistance, 120, 30) * pt.z;
+                
+                // Line glow effect
+                for (let w = 2; w > 0; w--) {
+                    stroke(greenColor[0], greenColor[1], greenColor[2], alpha / (w * 2));
+                    strokeWeight(w * pt.z * 0.8);
+                    line(mousePoint.x, mousePoint.y, pt.x, pt.y);
+                }
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            maxDistance = width / 4;
+            
+            // Recreate points and background for new dimensions
+            createPoints();
+            createGradientBackground();
+        }
+    </script>
+</body>
+</html>

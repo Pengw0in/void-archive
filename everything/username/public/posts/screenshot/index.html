@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/lohithsrikar/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=lohithsrikar/livereload" data-no-instant defer></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>ScreenShot! | JustaBlogSite!</title>
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/lohithsrikar/favicon.ico">
+
+    <link rel="stylesheet" href="http://localhost:1313/lohithsrikar/css/main.css">
+    <link rel="stylesheet" href="http://localhost:1313/lohithsrikar/css/min600.css">
+
+
+      <script src="http://localhost:1313/lohithsrikar/js/main.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4QR5T88G3K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('hugo', 'G-4QR5T88G3K');
+</script>
+
+
+</head>
+<body>
+    <header class="main-header">
+	<nav>
+	  <li><a href="http://localhost:1313/lohithsrikar/">/home</a></li>
+	  <li><a href="http://localhost:1313/lohithsrikar/tags/">/tags</a></li>
+	  <li><a href="http://localhost:1313/lohithsrikar/about/">/about</a></li>
+	  <li id="theme-toggle" style="cursor: pointer;">/todark</li>
+	</nav>
+  </header>
+
+  <script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  const themeToggle = document.getElementById('theme-toggle');
+	  
+	  
+	  let currentTheme = localStorage.getItem('theme') || 'light';
+  
+	  
+	  document.body.setAttribute('data-theme', currentTheme);
+	  themeToggle.textContent = currentTheme === 'dark' ? '/tolight' : '/todark';
+  
+	  
+	  function toggleTheme() {
+		
+		const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  
+		
+		document.body.setAttribute('data-theme', newTheme);
+  
+		
+		localStorage.setItem('theme', newTheme);
+  
+		
+		themeToggle.textContent = newTheme === 'dark' ? '/tolight' : '/todark';
+	  }
+  
+	  
+	  themeToggle.addEventListener('click', toggleTheme);
+	});
+  </script>
+
+    
+  <aside class="toc">
+    <nav id="TableOfContents"></nav>
+  </aside>
+  <div class="featured-container">
+    
+      <div class="featured-image">
+        <img src="http://localhost:1313/lohithsrikar/images/freeflags/featured.png" alt="Featured Image for ScreenShot!">
+      </div>
+    
+    <div class="overlay-text">
+      <small>2025.05.23</small>
+      <div class="singleTitle">ScreenShot!</div>
+    </div>
+  </div>
+  <div class="series">
+  <details>
+    <summary>NahamCon 2025 CTF Series</summary>
+    <ul>
+      
+      
+      
+    </ul>
+  </details>
+</div>
+
+<h1 id="screenshot">ScreenShot!</h1>
+<p>Hello everyone!
+Let&rsquo;s wrap this up quickly!</p>
+<p>This is a CTF challenge from NahamCon 2025 where we are given an image.</p>
+<img src="http://localhost:1313/lohithsrikar/images/screenshot/1.png" alt="Challenge Screenshot" width="600">
+<p>Well, the image contains a hex dump of some zip file.</p>
+<img src="http://localhost:1313/lohithsrikar/images/screenshot/2.png" alt="Hex Dump Screenshot" width="600">
+<p>Well, how did I know it&rsquo;s a zip file? Well, obviously it&rsquo;s mentioned in the CTF description, right?</p>
+<p>That&rsquo;s true, but another way is to match the file signature. Each file extension has its own file signature at the beginning of the file. For example, in this case we have <code>504b</code>, which is the file signature for zip files! More info about them here: <a href="https://en.wikipedia.org/wiki/List_of_file_signatures">https://en.wikipedia.org/wiki/List_of_file_signatures</a></p>
+<p>So what we will do is reverse this hex dump to convert it back into a zip file and open that zip, hoping that we would find a flag file in it!</p>
+<p>First, let&rsquo;s copy the contents of this image to a text file, say <code>hdump.txt</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>00000000: 504b 0304 3300 0100 6300 2f02 b55a 0000  PK..3...c./..Z..
+</span></span><span style="display:flex;"><span>00000010: 0000 4300 0000 2700 0000 0800 0b00 666c  ..C...&#39;......fl
+</span></span><span style="display:flex;"><span>00000020: 6167 2e74 7874 0199 0700 0200 4145 0300  ag.txt......AE..
+</span></span><span style="display:flex;"><span>00000030: 003d 42ff d1b3 5f95 0314 24f6 8b65 c3f5  .=B..._...$..e..
+</span></span><span style="display:flex;"><span>00000040: 7669 f14e 8df0 003f e240 b3ac 3364 859e  vi.N...?.@..3d..
+</span></span><span style="display:flex;"><span>00000050: 4c2d bc3c 36f2 d4ac c403 7613 85af e4e3  L-.&lt;6.....v.....
+</span></span><span style="display:flex;"><span>00000060: f90f bd29 d91b 614b a2c6 efde 11b7 1bcc  ...)..aK........
+</span></span><span style="display:flex;"><span>00000070: 907a 72ed 504b 0102 3f03 3300 0100 6300  .zr.PK..?.3...c.
+</span></span><span style="display:flex;"><span>00000080: 2f02 b55a 0000 0000 4300 0000 2700 0000  /..Z....C...&#39;...
+</span></span><span style="display:flex;"><span>00000090: 0800 2f00 0000 0000 0000 2080 b481 0000  ../....... .....
+</span></span><span style="display:flex;"><span>000000a0: 0000 666c 6167 2e74 7874 0a00 2000 0000  ..flag.txt.. ...
+</span></span><span style="display:flex;"><span>000000b0: 0000 0100 1800 8213 8543 07ca db01 0000  .........C......
+</span></span><span style="display:flex;"><span>000000c0: 0000 0000 0000 0000 0000 0000 0000 0199  ................
+</span></span><span style="display:flex;"><span>000000d0: 0700 0200 4145 0300 0050 4b05 0600 0000  ....AE...PK.....
+</span></span><span style="display:flex;"><span>000000e0: 0001 0001 0065 0000 0074 0000 0000 00    .....e...t.....
+</span></span></code></pre></div><p>To reverse the hex dump and convert it into a zip file, the following command can be used:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>xxd -r hdump.txt &gt; hdump.zip 
+</span></span></code></pre></div><p>And then unzip the <code>hdump.zip</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>unzip hdump.zip
+</span></span></code></pre></div><p>And that&rsquo;s it! We will get a flag file!</p>
+
+
+    
+
+<script src="https://unpkg.com/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js"></script>
+<script>addBackToTop({
+  diameter: 40,
+  backgroundColor: '#49344b',
+  textColor: '#fff'
+})</script>
+
+</body>
+</html>
